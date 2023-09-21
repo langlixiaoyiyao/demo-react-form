@@ -13,11 +13,12 @@ function App() {
 
   return (
     <div className="App">
-        <MyForm form={form}>
+        <MyForm form={form} initValues={{input: 'a'}}>
           <MyForm.Item name='input'>
             <input />
           </MyForm.Item>
           <button type='submit'>提交</button>
+          <button type='reset'>重置</button>
           <div onClick={handleClick}>点击修改form</div>
         </MyForm>
     </div>
