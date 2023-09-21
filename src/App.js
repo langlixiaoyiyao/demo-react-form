@@ -1,23 +1,25 @@
-import logo from './logo.svg';
+import React from 'react';
+import MyForm from './components/myForm';
 import './App.css';
 
 function App() {
+
+  const [form] = MyForm.useForm();
+
+  const handleClick = () => {
+    form.setFieldValue('input', 'xixii');
+    console.log(form.getFieldsValue());
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <MyForm form={form}>
+          <MyForm.Item name='input'>
+            <input />
+          </MyForm.Item>
+          <button type='submit'>提交</button>
+          <div onClick={handleClick}>点击修改form</div>
+        </MyForm>
     </div>
   );
 }
