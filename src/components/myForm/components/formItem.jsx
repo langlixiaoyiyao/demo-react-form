@@ -1,32 +1,40 @@
-import React, {memo, useContext, useEffect, useState} from 'react';
+import React from 'react';
 import FormContext from './formContext';
 
-const FormItem = memo((props) => {
-    const {name, children} = props;
-    const formContextData = useContext(FormContext);
+class FormItem extends React.Component {
+    static contextType = FormContext;
+    componentDidMount() {
+        const { registerField } = this.context;
+        this.unregisterField = registerField(this.props.name, this);
+    }
 
-    const [value, setValue] = useState(formContextData.getFieldValue(name) || '');
+    componentWillUnmount() {
+        this.unregisterField();
+    }
 
-    const handleChange = (e) => {
-        formContextData.setFieldValue(name, e.target.value);
+    handleChange = (e) => {
+        this.context.setFieldValue(this.props.name, e.target.value);
     };
 
-    const onStoreChange = () => {
-        setValue(formContextData.getFieldValue(name))
+    onStoreChange = () => {
+        this.forceUpdate();
     };
 
-    useEffect(() => {
-        const unregisterField = formContextData.registerField(name, onStoreChange);
-        return () => {
-            unregisterField();
-        }
-    }, []);
-    
-    return React.cloneElement(children, {
-        value: value,
-        onChange: handleChange,
-    })
-});
-
+    render() {
+        return <>
+            {
+                React.cloneElement(this.props.children, {
+                    value: this.context.getFieldValue(this.props.name) || '',
+                    onChange: this.handleChange,
+                })
+            }
+            {
+                this.context.getErrors()[this.props.name] && (
+                    <div style={{color: 'red'}}>{this.context.getErrors()[this.props.name]}</div>
+                )
+            }
+        </>
+    }
+}
 
 export default FormItem;

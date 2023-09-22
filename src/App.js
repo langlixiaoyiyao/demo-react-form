@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
         <MyForm form={form} initValues={{input: 'a'}}>
-          <MyForm.Item name='input'>
+          <MyForm.Item name='input' rules={[{required: true}]}>
             <input />
           </MyForm.Item>
           <button type='submit'>提交</button>

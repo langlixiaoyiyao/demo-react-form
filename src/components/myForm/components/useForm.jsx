@@ -38,24 +38,27 @@ class FormStore {
             ...newStore,
         };
         Object.keys(newStore).forEach((fieldName) => {
-            this.fieldEntities[fieldName]();
+            const errorMessage = this.validateField(fieldName, newStore[fieldName]);
+            this.errors[fieldName] = errorMessage;
+            this.fieldEntities[fieldName].onStoreChange();
         });
     }
     setFieldValue = (fieldName, value) => {
         this.store[fieldName] = value;
-        this.fieldEntities[fieldName]();
+        const errorMessage = this.validateField(fieldName, value);
+        this.errors[fieldName] = errorMessage;
+        console.log("this.fieldEntities", this.errors);
+        this.fieldEntities[fieldName].onStoreChange();
     }
     onSubmit = (e) => {
         e.preventDefault();
         console.log("提交的数据", this.store);
     }
-    registerField = (name, callback) => { 
-        this.fieldEntities[name] = callback;
-        this.errors[name] = [];
+    registerField = (name, entity) => { 
+        this.fieldEntities[name] = entity;
         return () => {
             delete this.store[name];
             delete this.fieldEntities[name];
-            delete this.errors[name];
         }
     }
     setInitialValues = (initValues=this.initValues) => {
@@ -63,7 +66,24 @@ class FormStore {
         this.setFieldsValue(deepCopy(initValues));
     }
     validateField = (name, value) => {
+        const rules = this.fieldEntities[name].props.rules || [];
         
+        let returnValue = '';
+        for(let i = 0; i <rules.length; i++) {
+            const rule = rules[i];
+            if (rule.required && (value === undefined || value === "")) {
+                console.log("rule");
+                returnValue = rule.message || '必填项';
+                break;
+            } else if (rule.pattern && !rule.pattern.test(value)) {
+                returnValue = rule.message || '格式不正确';
+                break;
+            }
+        }
+        return returnValue;
+    }
+    getErrors = () => {
+        return this.errors;
     }
     getForm = () => {
         return {
@@ -73,6 +93,7 @@ class FormStore {
             setFieldValue: this.setFieldValue,
             registerField: this.registerField,
             setInitialValues: this.setInitialValues,
+            getErrors: this.getErrors,
         }
     }
 }
