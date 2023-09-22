@@ -9,6 +9,8 @@ const FormContext = createContext({
     getFieldValue: func,
     setFieldsValue: func,
     setFieldValue: func,
+    registerField: func,
+    setInitialValues: func,
 });
 
 export default FormContext;

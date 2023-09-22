@@ -24,6 +24,7 @@ class FormStore {
         this.store = {};
         this.fieldEntities = {};
         this.initValues = {};
+        this.errors = {};
     }
     getFieldsValue = () => {        /* 这里所有的函数使用箭头函数的原因是：this的指向问题 */
         return this.store;
@@ -50,15 +51,19 @@ class FormStore {
     }
     registerField = (name, callback) => { 
         this.fieldEntities[name] = callback;
-
+        this.errors[name] = [];
         return () => {
             delete this.store[name];
             delete this.fieldEntities[name];
+            delete this.errors[name];
         }
     }
     setInitialValues = (initValues=this.initValues) => {
         this.initValues = deepCopy(initValues);
         this.setFieldsValue(deepCopy(initValues));
+    }
+    validateField = (name, value) => {
+        
     }
     getForm = () => {
         return {
